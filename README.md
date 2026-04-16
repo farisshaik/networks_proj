@@ -22,7 +22,7 @@ make server
 
 ### Run a client (in a separate terminal)
 ```bash
-make client NAME=Alice
+make client NAME=Faris
 ```
 
 ### Run a full demo (server + 3 simultaneous clients)
@@ -43,7 +43,7 @@ make clean
 |---|---|
 | Server host | `127.0.0.1` (localhost) |
 | Port | `6789` |
-| Client name | Passed as command-line arg: `java MathClient <name>` — auto-generated if omitted |
+| Client name | Passed as command-line arg: `java MathClient Faris` — auto-generated if omitted |
 
 ---
 
@@ -88,7 +88,7 @@ See the **How to Compile and Run** section above.
 ### f. Parameters Needed During Execution
 - **IP address:** hardcoded to `127.0.0.1` in `MathClient.java` (change `HOST` constant for remote use)
 - **Port:** `6789` (change `PORT` constant in both files if needed)
-- **Client name:** passed as first argument to `MathClient` — e.g., `java MathClient Alice`
+- **Client name:** passed as first argument to `MathClient` — e.g., `java MathClient Faris`
 
 ### g. Comments Throughout Code
 Both source files (`MathServer.java`, `MathClient.java`) include a protocol specification header, inline comments explaining the architecture, and Javadoc-style comments on all major methods and classes.
@@ -115,27 +115,27 @@ The application is fully complete. All server and client requirements from the p
 Run `make demo` to see live output from all three clients and the server simultaneously. Sample output is shown below:
 
 ```
-[16:12:22] [SERVER] JOIN    | name=Alice  ip=127.0.0.1  at=2026-04-13 16:12:22
-[16:12:22] [SERVER] JOIN    | name=Bob    ip=127.0.0.1  at=2026-04-13 16:12:22
-[16:12:22] [SERVER] JOIN    | name=Carol  ip=127.0.0.1  at=2026-04-13 16:12:22
-[16:12:22] [SERVER] Active clients: [Bob, Alice, Carol]
-[Alice] Server: Welcome to the Math Server, Alice!
-[Bob]   Server: Welcome to the Math Server, Bob!
-[Carol] Server: Welcome to the Math Server, Carol!
-[Alice] Sending: (3 + 4) * 2
-[16:12:24] [SERVER] MATH    | from=Alice  expr="(3 + 4) * 2"
-[16:12:24] [SERVER] RESULT  | from=Alice  expr="(3 + 4) * 2"  result=14
-[Alice] Result: (3 + 4) * 2 = 14
-[Bob]   Sending: 50 - 10 / 2
-[16:12:24] [SERVER] MATH    | from=Bob    expr="50 - 10 / 2"
-[16:12:24] [SERVER] RESULT  | from=Bob    expr="50 - 10 / 2"  result=45
-[Bob]   Result: 50 - 10 / 2 = 45
-[Bob]   Disconnecting...
-[16:12:29] [SERVER] BYE     | name=Bob    duration=6s
-[Alice] Disconnecting...
-[16:12:31] [SERVER] BYE     | name=Alice  duration=8s
-[Carol] Disconnecting...
-[16:12:31] [SERVER] BYE     | name=Carol  duration=8s
+[16:12:22] [SERVER] JOIN    | name=Faris   ip=127.0.0.1  at=2026-04-13 16:12:22
+[16:12:22] [SERVER] JOIN    | name=Aariz   ip=127.0.0.1  at=2026-04-13 16:12:22
+[16:12:22] [SERVER] JOIN    | name=Pritam  ip=127.0.0.1  at=2026-04-13 16:12:22
+[16:12:22] [SERVER] Active clients: [Faris, Aariz, Pritam]
+[Faris]  Server: Welcome to the Math Server, Faris!
+[Aariz]  Server: Welcome to the Math Server, Aariz!
+[Pritam] Server: Welcome to the Math Server, Pritam!
+[Faris]  Sending: (3 + 4) * 2
+[16:12:24] [SERVER] MATH    | from=Faris  expr="(3 + 4) * 2"
+[16:12:24] [SERVER] RESULT  | from=Faris  expr="(3 + 4) * 2"  result=14
+[Faris]  Result: (3 + 4) * 2 = 14
+[Aariz]  Sending: 50 - 10 / 2
+[16:12:24] [SERVER] MATH    | from=Aariz  expr="50 - 10 / 2"
+[16:12:24] [SERVER] RESULT  | from=Aariz  expr="50 - 10 / 2"  result=45
+[Aariz]  Result: 50 - 10 / 2 = 45
+[Aariz]  Disconnecting...
+[16:12:29] [SERVER] BYE     | name=Aariz   duration=6s
+[Faris]  Disconnecting...
+[16:12:31] [SERVER] BYE     | name=Faris   duration=8s
+[Pritam] Disconnecting...
+[16:12:31] [SERVER] BYE     | name=Pritam  duration=8s
 ```
 
 ---

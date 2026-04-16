@@ -21,7 +21,7 @@ compile:
 server:
 	$(JAVA) MathServer
 
-# Usage:  make client NAME=Alice
+# Usage:  make client NAME=Faris
 client:
 	$(JAVA) MathClient $(NAME)
 
@@ -29,9 +29,9 @@ client:
 demo: compile
 	$(JAVA) MathServer &
 	sleep 1
-	$(JAVA) MathClient Alice &
-	$(JAVA) MathClient Bob   &
-	$(JAVA) MathClient Carol &
+	$(JAVA) MathClient Faris  &
+	$(JAVA) MathClient Aariz  &
+	$(JAVA) MathClient Pritam &
 	wait
 
 clean:
