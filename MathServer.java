@@ -1,9 +1,6 @@
 /*
  * ============================================================
- * CS 4390 - Computer Networks  |  Spring 2026
- * Centralized Math Server
- *
- * PROTOCOL SPECIFICATION
+ * Math Server
  * ----------------------
  * All messages are newline-terminated, fields separated by '|'.
  *
@@ -47,10 +44,6 @@ public class MathServer {
      */
     static final BlockingQueue<MathRequest> requestQueue = new LinkedBlockingQueue<>();
 
-    // ------------------------------------------------------------------
-    // Entry point
-    // ------------------------------------------------------------------
-
     public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = new ServerSocket(PORT);
         log("Math Server started on port " + PORT);
@@ -71,10 +64,6 @@ public class MathServer {
         String ts = new SimpleDateFormat("HH:mm:ss").format(new Date());
         System.out.println("[" + ts + "] [SERVER] " + msg);
     }
-
-    // ------------------------------------------------------------------
-    // Data classes
-    // ------------------------------------------------------------------
 
     /** Stores metadata for one connected client. */
     static class ClientInfo {
@@ -111,9 +100,7 @@ public class MathServer {
         }
     }
 
-    // ------------------------------------------------------------------
-    // Request processor — single thread, FIFO order
-    // ------------------------------------------------------------------
+    // Request processor single thread, FIFO order
 
     static class RequestProcessor implements Runnable {
 
@@ -154,12 +141,12 @@ public class MathServer {
         }
 
         /**
-         * Recursive descent evaluator with standard operator precedence.
+         * Recursive evaluator with standard operator precedence
          *
-         * Strategy: scan the expression right-to-left at parenthesis depth 0.
-         * The rightmost lowest-precedence operator splits the expression into
+         * scans the expression right-to-left at parenthesis depth 0.
+         * The rightmost lowest-precedence operator splits expression into
          * two sub-expressions that are recursed into, naturally producing
-         * left-to-right evaluation and correct precedence (+/- < * /).
+         * left-to-right evaluation and correct precedence (PEMDAS)
          *
          * Supported: integer and decimal literals, +  -  *  /  and parentheses.
          * Unary minus is supported on bare numbers (e.g., "-5") but not on
@@ -222,9 +209,7 @@ public class MathServer {
         }
     }
 
-    // ------------------------------------------------------------------
     // Client handler — one thread per connected client
-    // ------------------------------------------------------------------
 
     static class ClientHandler implements Runnable {
 
