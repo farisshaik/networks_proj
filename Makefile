@@ -25,13 +25,14 @@ server:
 client:
 	$(JAVA) MathClient $(NAME)
 
-# Quick demo: starts the server in the background then launches three clients
+# Quick demo: starts the server in the background then launches three clients.
+# Expressions are piped into each client to simulate user input automatically.
 demo: compile
 	$(JAVA) MathServer &
 	sleep 1
-	$(JAVA) MathClient Faris  &
-	$(JAVA) MathClient Aariz  &
-	$(JAVA) MathClient Pritam &
+	printf "10 + 5\n6 * 7\n20 - 8\ndone\n"              | $(JAVA) MathClient Faris  &
+	printf "100 / 4\n3 + 4 * 2\n(3 + 4) * 2\ndone\n"    | $(JAVA) MathClient Aariz  &
+	printf "50 - 10 / 2\n8 * 8 - 4\n15 + 3 * 4 - 2\ndone\n" | $(JAVA) MathClient Pritam &
 	wait
 
 clean:
