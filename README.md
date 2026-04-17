@@ -3,7 +3,7 @@
 
 **Group Members:**
 - Faris Shaik
-- Pritam Hedge
+- Pritam Hegde
 - Aariz Habib
 
 ---
@@ -67,7 +67,7 @@ All messages are newline-terminated with fields separated by `|`.
 
 ### a. Names and NetIDs
 - Faris Shaik
-- Pritam Hedge
+- Pritam Hegde
 - Aariz Habib
 
 ### b. Project Partners' Contributions
