@@ -1,4 +1,4 @@
 CS4390 Project
 Faris Shaik
-Pritam Hedge
+Pritam Hegde
 Aariz Habib

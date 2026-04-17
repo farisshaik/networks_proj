@@ -1,25 +1,25 @@
 /*
- * ============================================================
- * CS 4390 - Computer Networks  |  Spring 2026
- * Math Server Client
- *
- * Usage:
- *   java MathClient <YourName>
- *   java MathClient          (auto-generates a name like "Client427")
- *
- * Behavior:
- *   1. Connects to the server and sends JOIN|<name>
- *   2. Waits for ACK from server
- *   3. Spawns a listener thread to print server responses as they arrive
- *   4. Sends 3–5 randomly chosen math expressions at random intervals
- *      (500 ms – 2 000 ms between each) to simulate real-world timing
- *   5. Sends BYE|<name> and closes the connection
- *
- * Protocol (same as MathServer.java — reproduced here for reference):
- *   Client → Server:  JOIN|<name>  /  MATH|<name>|<expression>  /  BYE|<name>
- *   Server → Client:  ACK|<name>|<msg>  /  RESULT|<expr>|<val>  /
- *                     GOODBYE|<name>|<msg>  /  ERROR|<msg>
- * ============================================================
+  ============================================================
+  CS 4390 - Computer Networks  |  Spring 2026
+  Math Server Client
+ 
+  Usage:
+    java MathClient <YourName>
+    java MathClient          (randomly generates a name like "Client427")
+ 
+  Behavior:
+    1. Connects to the server and sends JOIN|<name>
+    2. Waits for ACK from server
+    3. Spawns a listener thread to print server responses as they arrive
+    4. Sends 3–5 randomly chosen math expressions at random intervals
+       (500 ms – 2 000 ms between each) to simulate real-world timing
+    5. Sends BYE|<name> and closes the connection
+ 
+  Protocol (same as MathServer.java — reproduced here for reference):
+    Client → Server:  JOIN|<name>  /  MATH|<name>|<expression>  /  BYE|<name>
+    Server → Client:  ACK|<name>|<msg>  /  RESULT|<expr>|<val>  /
+                      GOODBYE|<name>|<msg>  /  ERROR|<msg>
+  ============================================================
  */
 
 import java.io.*;
@@ -32,8 +32,8 @@ public class MathClient {
     static final int    PORT = 6789;
 
     /**
-     * Pool of expressions available to each client instance.
-     * The client shuffles this list and picks 3–5 at random.
+      Expressions available to each client instance
+      The client shuffles this list and picks 3–5 at random
      */
     static final String[] EXPRESSION_POOL = {
         "10 + 5",
@@ -64,10 +64,10 @@ public class MathClient {
             BufferedReader in  = new BufferedReader(
                                      new InputStreamReader(socket.getInputStream()));
 
-            // ---- Step 1: Send JOIN ----
+            //  Step 1: Send JOIN 
             out.println("JOIN|" + clientName);
 
-            // ---- Step 2: Wait for ACK ----
+            //  Step 2: Wait for ACK 
             String ack = in.readLine();
             if (ack == null || !ack.startsWith("ACK|")) {
                 System.out.println("[" + clientName + "] Connection refused: " + ack);
@@ -76,7 +76,7 @@ public class MathClient {
             String[] ackParts = ack.split("\\|", 3);
             System.out.println("[" + clientName + "] Server: " + ackParts[2]);
 
-            // ---- Step 3: Listener thread — prints all server responses ----
+            //  Step 3: Listener thread — prints all server responses 
             Thread listener = new Thread(() -> {
                 try {
                     String response;
@@ -105,7 +105,7 @@ public class MathClient {
             listener.setDaemon(true);
             listener.start();
 
-            // ---- Step 4: Send 3–5 randomly chosen math expressions ----
+            //  Step 4: Send 3–5 randomly chosen math expressions 
             Random rand = new Random();
             List<String> pool = new ArrayList<>(Arrays.asList(EXPRESSION_POOL));
             Collections.shuffle(pool, rand);
@@ -126,7 +126,7 @@ public class MathClient {
             // Allow time for the last result to arrive before disconnecting
             Thread.sleep(2000);
 
-            // ---- Step 5: Send BYE and close ----
+            //  Step 5: Send BYE and close 
             System.out.println("[" + clientName + "] Disconnecting...");
             out.println("BYE|" + clientName);
             Thread.sleep(500); // short wait so the listener can print GOODBYE

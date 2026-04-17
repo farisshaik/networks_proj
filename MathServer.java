@@ -1,30 +1,30 @@
 /*
- * ============================================================
- * CS 4390 - Computer Networks  |  Spring 2026
- * Centralized Math Server
- *
- * PROTOCOL SPECIFICATION
- * ----------------------
- * All messages are newline-terminated, fields separated by '|'.
- *
- *   Client → Server:
- *     JOIN|<clientName>               — Register with the server
- *     MATH|<clientName>|<expression>  — Submit a math expression
- *     BYE|<clientName>                — Request disconnection
- *
- *   Server → Client:
- *     ACK|<clientName>|<message>      — Confirm successful JOIN
- *     RESULT|<expression>|<result>    — Return computed result
- *     GOODBYE|<clientName>|<message>  — Confirm disconnection
- *     ERROR|<message>                 — Protocol or input error
- *
- * ARCHITECTURE
- * ------------
- *   - Main thread:         accepts incoming TCP connections
- *   - ClientHandler:       one thread per client (reads messages, queues requests)
- *   - RequestProcessor:    single thread that drains the FIFO queue,
- *                          ensuring requests are answered in arrival order
- * ============================================================
+  ============================================================
+  CS 4390 - Computer Networks  |  Spring 2026
+  Centralized Math Server
+ 
+  PROTOCOL SPECIFICATION
+  ----------------------
+  All messages are newline-terminated, fields separated by '|'.
+ 
+    Client → Server:
+      JOIN|<clientName>               — Register with the server
+      MATH|<clientName>|<expression>  — Submit a math expression
+      BYE|<clientName>                — Request disconnection
+ 
+    Server → Client:
+      ACK|<clientName>|<message>      — Confirm successful JOIN
+      RESULT|<expression>|<result>    — Return computed result
+      GOODBYE|<clientName>|<message>  — Confirm disconnection
+      ERROR|<message>                 — Protocol or input error
+ 
+  ARCHITECTURE
+  ------------
+    - Main thread:         accepts incoming TCP connections
+    - ClientHandler:       one thread per client (reads messages, queues requests)
+    - RequestProcessor:    single thread that drains the FIFO queue,
+                           ensuring requests are answered in arrival order
+  ============================================================
  */
 
 import java.io.*;
@@ -37,20 +37,18 @@ public class MathServer {
 
     static final int PORT = 6789;
 
-    /** All currently connected clients, keyed by client name. */
+    // All currently connected clients, keyed by client name
     static final Map<String, ClientInfo> connectedClients = new ConcurrentHashMap<>();
 
-    /**
-     * Central FIFO queue. Every ClientHandler enqueues requests here;
-     * the single RequestProcessor thread drains it, guaranteeing
-     * that responses are sent in the order requests were received.
+    /*
+    Central FIFO queue. Every ClientHandler enqueues requests here;
+    the single RequestProcessor thread drains it, guaranteeing
+    that responses are sent in the order requests were received.
      */
     static final BlockingQueue<MathRequest> requestQueue = new LinkedBlockingQueue<>();
 
-    // ------------------------------------------------------------------
-    // Entry point
-    // ------------------------------------------------------------------
 
+    // Entry point
     public static void main(String[] args) throws Exception {
         ServerSocket serverSocket = new ServerSocket(PORT);
         log("Math Server started on port " + PORT);
@@ -66,17 +64,15 @@ public class MathServer {
         }
     }
 
-    /** Prints a timestamped server log line to stdout. */
+    // Prints a timestamped server log line to stdout
     static void log(String msg) {
         String ts = new SimpleDateFormat("HH:mm:ss").format(new Date());
         System.out.println("[" + ts + "] [SERVER] " + msg);
     }
 
-    // ------------------------------------------------------------------
-    // Data classes
-    // ------------------------------------------------------------------
+    
 
-    /** Stores metadata for one connected client. */
+    // Stores metadata for one connected client
     static class ClientInfo {
         final String name;
         final String address;
@@ -98,7 +94,7 @@ public class MathServer {
         }
     }
 
-    /** Wraps one pending math request along with the output stream to reply on. */
+    // Wraps one pending math request along with the output stream to reply on
     static class MathRequest {
         final String      clientName;
         final String      expression;
@@ -111,10 +107,7 @@ public class MathServer {
         }
     }
 
-    // ------------------------------------------------------------------
     // Request processor — single thread, FIFO order
-    // ------------------------------------------------------------------
-
     static class RequestProcessor implements Runnable {
 
         @Override
@@ -133,7 +126,7 @@ public class MathServer {
             }
         }
 
-        /** Top-level evaluator: returns a formatted number string or an error string. */
+        // Top-level evaluator: returns a formatted number string or an error string 
         private String evaluate(String expr) {
             try {
                 double result = eval(expr.trim());
@@ -154,22 +147,19 @@ public class MathServer {
         }
 
         /**
-         * Recursive descent evaluator with standard operator precedence.
-         *
-         * Strategy: scan the expression right-to-left at parenthesis depth 0.
-         * The rightmost lowest-precedence operator splits the expression into
-         * two sub-expressions that are recursed into, naturally producing
-         * left-to-right evaluation and correct precedence (+/- < * /).
-         *
-         * Supported: integer and decimal literals, +  -  *  /  and parentheses.
-         * Unary minus is supported on bare numbers (e.g., "-5") but not on
-         * sub-expressions (write "0 - x" instead of "- x").
+          Recursive descent evaluator with standard operator precedence.
+          Strategy: scan the expression right-to-left at parenthesis depth 0.
+          The rightmost lowest-precedence operator splits the expression into
+          two sub-expressions that are recursed into, naturally producing
+          left-to-right evaluation and correct precedence (+/- < * /).
+          Supported: integer and decimal literals, +  -  *  /  and parentheses.
+          Minus is supported on numbers (e.g., "-5") but not on sub-expressions (write "0 - x" instead of "- x").
          */
         private double eval(String expr) {
             expr = expr.trim();
             if (expr.isEmpty()) throw new IllegalArgumentException("Empty expression");
 
-            // Strip enclosing parentheses, e.g. "(3 + 4)" → "3 + 4"
+            // Strip enclosing parentheses, "(3 + 4)" → "3 + 4"
             if (expr.charAt(0) == '(' &&
                     matchingParen(expr, 0) == expr.length() - 1) {
                 return eval(expr.substring(1, expr.length() - 1));
@@ -209,7 +199,7 @@ public class MathServer {
             return Double.parseDouble(expr);
         }
 
-        /** Returns the index of the ')' that matches the '(' at startIndex. */
+        // Returns the index of the ')' that matches the '(' at startIndex. 
         private int matchingParen(String expr, int startIndex) {
             int depth = 0;
             for (int i = startIndex; i < expr.length(); i++) {
@@ -222,10 +212,7 @@ public class MathServer {
         }
     }
 
-    // ------------------------------------------------------------------
     // Client handler — one thread per connected client
-    // ------------------------------------------------------------------
-
     static class ClientHandler implements Runnable {
 
         private final Socket socket;
@@ -243,7 +230,7 @@ public class MathServer {
                 out = new PrintWriter(socket.getOutputStream(), true);
                 in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                // ---- Handshake: first message must be JOIN ----
+                //  Handshake: first message must be JOIN 
                 String msg = in.readLine();
                 if (msg == null || !msg.startsWith("JOIN|")) {
                     out.println("ERROR|First message must be JOIN|<name>");
@@ -267,7 +254,7 @@ public class MathServer {
 
                 out.println("ACK|" + clientName + "|Welcome to the Math Server, " + clientName + "!");
 
-                // ---- Main message loop ----
+                //  Main message loop 
                 while ((msg = in.readLine()) != null) {
 
                     if (msg.startsWith("MATH|")) {
@@ -302,7 +289,7 @@ public class MathServer {
             }
         }
 
-        /** Removes the client from the registry and sends a GOODBYE message. */
+        // Removes the client from the registry and sends a GOODBYE message
         private void handleDisconnect() {
             ClientInfo info     = connectedClients.remove(clientName);
             String     duration = info != null ? info.sessionDuration() : "unknown";
